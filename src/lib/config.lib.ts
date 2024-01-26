@@ -10,9 +10,15 @@ export class AppConfig {
   }
 
   private init(): void {
-    this.appConfig = config({
-      path: path.join(__dirname, `../../${this.environment}.env`),
-    });
+    if (this.environment === 'production') {
+      this.appConfig = config({
+        path: path.join(__dirname, `../../.env`),
+      });
+    } else {
+      this.appConfig = config({
+        path: path.join(__dirname, `../../${this.environment}.env`),
+      });
+    }
   }
 
   get(key: string): any {
