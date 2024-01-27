@@ -43,7 +43,7 @@ export class GraphQlQuery {
   getRepositoriesList = (first: number) => {
     const query = `query getRepositoriesList($first: Int) {
       viewer {
-        repositories(first: $first) {
+        repositories(first: $first, affiliations: OWNER) {
           nodes {
             createdAt
             diskUsage
