@@ -10,7 +10,7 @@ export class AppConfig {
   }
 
   private init(): void {
-    if (this.environment === 'production') {
+    if (this.environment === "production") {
       this.appConfig = config({
         path: path.join(__dirname, `../../.env`),
       });

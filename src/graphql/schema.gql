@@ -38868,15 +38868,23 @@ type Query {
   """The currently authenticated user."""
   viewer: User!
 
-  getRepositories(first: Int, after: String, before: String): RepositoryList!
+  getRepositories: [Repository]!
 
   getRepositoryBasicDetails(name: String!): RepositoryDetails!
 
-  scanRepository(name: String!): ScanRepository!
+  scanRepository(name: String!): ScanRepository
 
-  scanRepositoryV2(name: String!): ScanRepository!
+  scanAllRepository: [ScanAllRepository]!
 
   getActiveWebhooks(name: String!, owner: String!): [Webhook]!
+}
+
+type ScanAllRepository  {
+    createdAt: DateTime!
+    diskUsage: Int!
+    name: String!
+    nameWithOwner: String!
+    scanDetails: ScanRepository
 }
 
 type Webhook {
@@ -38895,13 +38903,13 @@ type FileContent {
 }
 
 type ScanRepository {
-  defaultBranch: String!
+  defaultBranch: String
   owner: String!
   diskUsage: Int!
   isPrivate: Boolean!
-  totalCount: Int!
+  totalCount: Int
   content: FileContent
-  activeWebHooks: [Webhook]!
+  activeWebHooks: [Webhook]
 }
 
 type RepositoryDetails {
@@ -38918,13 +38926,6 @@ type PrevPageParams {
 
 type NextPageParams {
   after: String
-}
-
-type RepositoryList {
-  prevPageParams: PrevPageParams
-  nextPageParams: NextPageParams
-  data: [Repository]!
-  pageInfo: PageInfo!
 }
 
 """A valid x509 certificate string"""

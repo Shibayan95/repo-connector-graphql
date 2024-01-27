@@ -33,7 +33,7 @@ const bootStrapApplication = async (): Promise<void> => {
   };
 
   app.use(cors());
-  app.use(metricsMiddleware(logger, util))
+  app.use(metricsMiddleware(logger, util));
   app.use("/api", routerModule(moduleDependencies));
   app.use("/graphql", apolloMiddleware);
 
@@ -47,9 +47,7 @@ const bootStrapApplication = async (): Promise<void> => {
   });
 
   app.listen(appConfig.get("PORT") || 3000, () =>
-    logger.info(
-      `Server running at port: ${appConfig.get("PORT") || 3000}`,
-    ),
+    logger.info(`Server running at port: ${appConfig.get("PORT") || 3000}`),
   );
 };
 

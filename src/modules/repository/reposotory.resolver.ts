@@ -1,21 +1,19 @@
 import { IModuleDependencies } from "../../types";
-import { formatAllRepositoryResult, getActiveWebhooks, scanRepositoryByName } from ".";
+import {
+  getRepositoryListQueries,
+  scanAllRepositoriesLogic,
+  scanRepositoryByName,
+} from ".";
 
 const Resolver = {
   Query: {
-    getRepositories: async (
+    getRepositories: (
       parent,
       args,
       contextValue: IModuleDependencies,
       info,
     ) => {
-      const { apolloService, graphQlQuery } = contextValue;
-      const { first, after, before } = args;
-      const { data } = await apolloService.request(
-        "",
-        graphQlQuery.getRepositories(first, after, before),
-      );
-      return formatAllRepositoryResult(data);
+      return getRepositoryListQueries(contextValue);
     },
     getRepositoryBasicDetails: async (
       parent,
@@ -31,37 +29,18 @@ const Resolver = {
       );
       return data;
     },
-    scanRepository: async (
-      parent,
-      args,
-      contextValue: IModuleDependencies,
-      info,
-    ) => {
+    scanRepository: (parent, args, contextValue: IModuleDependencies, info) => {
       const { name } = args;
-      const data = await scanRepositoryByName(contextValue, name, false);
-      return data;
+      return scanRepositoryByName(contextValue, name);
     },
-
-    scanRepositoryV2: async (
+    scanAllRepository: (
       parent,
       args,
       contextValue: IModuleDependencies,
       info,
     ) => {
-      const { name } = args;
-      const data = await scanRepositoryByName(contextValue, name, true);
-      return data;
+      return scanAllRepositoriesLogic(contextValue);
     },
-    getActiveWebhooks: async (
-      parent,
-      args,
-      contextValue: IModuleDependencies,
-      info,
-    ) => {
-      const { name, owner } = args;
-      const { apolloService } = contextValue;
-      return getActiveWebhooks(apolloService, name, owner)
-    }
   },
 };
 

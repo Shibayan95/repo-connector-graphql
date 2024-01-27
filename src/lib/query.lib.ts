@@ -5,31 +5,58 @@ import { AppConfig } from "./config.lib";
 export class GraphQlQuery {
   private readonly logStream: WriteStream;
   constructor(appConfig: AppConfig) {
-    this.logStream = createWriteStream(path.join(__dirname, `../../${appConfig.get('QUERY_LOG_FILE')}.txt`));
+    this.logStream = createWriteStream(
+      path.join(__dirname, `../../${appConfig.get("QUERY_LOG_FILE")}.txt`),
+    );
   }
-  getRepositories = (first: number, after?: string, before?: string) => {
-    const query = `query getRepositories($first: Int, $after: String, $before: String) {
+
+  getLogin = () => {
+    const query = `query Query {
       viewer {
-        repositories(first: $first, after: $after, before: $before) {
+        login
+      }
+    }`;
+    this.logStream.write(`getLogin: ${query}\n`);
+    return {
+      operationName: "Query",
+      variables: {},
+      query,
+    };
+  };
+
+  getRepositoryCount = (login: string) => {
+    const query = `query Query($login: String!) {
+      repositoryOwner(login: $login) {
+        repositories {
+            totalCount
+          }
+      }
+    }`;
+    this.logStream.write(`getLogin: ${query}\n`);
+    return {
+      operationName: "Query",
+      variables: { login },
+      query,
+    };
+  };
+
+  getRepositoriesList = (first: number) => {
+    const query = `query getRepositoriesList($first: Int) {
+      viewer {
+        repositories(first: $first) {
           nodes {
             createdAt
             diskUsage
             name
             nameWithOwner
           }
-          pageInfo {
-            endCursor
-            hasNextPage
-            hasPreviousPage
-            startCursor
-          }
         }
       }
     }`;
-    this.logStream.write(`getRepositoryBasicDetails: ${query}\n`);
+    this.logStream.write(`getRepositoriesList: ${query}\n`);
     return {
-      operationName: "getRepositories",
-      variables: { first, ...(after && { after }), ...(before && { before }) },
+      operationName: "getRepositoriesList",
+      variables: { first },
       query,
     };
   };
@@ -48,11 +75,40 @@ export class GraphQlQuery {
           }
         }
       }
-    }`
+    }`;
     this.logStream.write(`getRepositoryBasicDetails: ${query}\n`);
     return {
       operationName: "getRepositoryBasicDetails",
       variables: { name },
+      query,
+    };
+  };
+
+  getRepositoryBasicDetailsBatch = (nameMap: Record<string, string>) => {
+    const query = `query getRepositoryBasicDetails{
+      viewer {
+        login
+        ${Object.keys(nameMap)
+          .map(
+            (k) => `
+        ${k}: repository(name: "${nameMap[k]}") {
+          name
+          diskUsage
+          nameWithOwner
+          isPrivate
+          defaultBranchRef {
+            name
+          }
+        }
+        `,
+          )
+          .join("")}
+      }
+    }`;
+    this.logStream.write(`getRepositoryBasicDetails: ${query}\n`);
+    return {
+      operationName: "getRepositoryBasicDetails",
+      variables: {},
       query,
     };
   };
@@ -98,7 +154,7 @@ export class GraphQlQuery {
           }
         }
       }
-    }`
+    }`;
     this.logStream.write(`getFileContent: ${query}\n`);
     return {
       operationName: "getFileContent",
@@ -122,12 +178,6 @@ export class GraphQlQuery {
                     entries {
                       name
                       type
-                      object {
-                        ... on Blob {
-                          byteSize
-                          isBinary
-                        }
-                      }
                       size
                     }
                   }
@@ -137,7 +187,7 @@ export class GraphQlQuery {
               .join("")}
           }
         }
-      }`.replace(/\n/g, "");
+      }`;
     this.logStream.write(`getMultiplePathRepoContents: ${query}\n`);
     return {
       operationName: "getRepoBranchContents",

@@ -10,7 +10,7 @@ export class HttpService {
   }
 
   async get(url: string, headers: any = {}, useBaseUrl = true) {
-    const urlToBeSent = `${useBaseUrl ? `${this.baseUrl}/`: ''}${url}`;
+    const urlToBeSent = `${useBaseUrl ? `${this.baseUrl}/` : ""}${url}`;
     const resp = await fetch(urlToBeSent, {
       method: "GET",
       headers: { ...this.globalheaders, ...headers },

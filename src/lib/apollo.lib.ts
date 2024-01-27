@@ -79,7 +79,6 @@ export class Apollo {
         logger: this.logger,
         resolvers,
         // introspection: false,
-        
       });
       await this.apolloServer.start();
       this.logger.info(`Initialised Apollo Server`);

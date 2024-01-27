@@ -77,7 +77,7 @@ export interface IContentDetails {
   type: "blob" | "tree";
   object: any;
   size: number;
-  contents?: Record<string, IContentDetails>;
+  expressionPreffix: string;
 }
 
 export interface IObject {

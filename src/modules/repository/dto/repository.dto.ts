@@ -1,17 +1,4 @@
-import { IsNumber, IsOptional, IsString } from "class-validator";
-
-export class RepositoryListDto {
-  @IsNumber()
-  first: number;
-
-  @IsOptional()
-  @IsString()
-  before?: string;
-
-  @IsOptional()
-  @IsString()
-  after?: string;
-}
+import { IsString } from "class-validator";
 
 export class RepositoryDetailsDto {
   @IsString()
